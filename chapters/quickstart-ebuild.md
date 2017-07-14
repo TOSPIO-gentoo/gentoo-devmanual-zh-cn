@@ -48,8 +48,8 @@ ebuild文件使用tab缩进，每个tab占位四个空格。参见[ebuild文件�
 * `HOMEPAGE`，包的首页链接（不要忘记包含`http://`）。
 * `SRC_URI`，源代码包的下载地址。在上述ebuild中，`mirror://sourceforge`是一种特殊标记法，其含义是“任意的Sourceforce镜像”。`${P}`是一个只读变量，由portage设置，表示包的名称和版本，在这个示例中，值为`ctags-5.5.4`。
 * `LICENCE`，许可证，示例中是`GPL-2`(GNU通用公共许可证第二版)。
-* `SLOT`，包将要装到哪个*slot*中。如果你不知道slot是什么鬼，使用`"0"`，或者阅读[Slot](chapters/general-concepts/slotting.md)
-* `KEYWORDS`，定义为软件通过测试的架构，示例中使用的`~`，表示最新添加的ebuild。即使包能够正常运行，也不会立刻提交到stable分支下。详情请参见[Keyword](keywording.md)
+* `SLOT`，包将要装到哪个*slot*中。如果你不知道slot是什么鬼，使用`"0"`，或者阅读[Slot](chapters/general-concepts/slotting.md)。
+* `KEYWORDS`，定义为软件通过测试的架构，示例中使用的`~`，表示最新添加的ebuild。即使包能够正常运行，也不会立刻提交到stable分支下。详情请参见[Keyword](keywording.md)。
 
 ### 构建函数
 
@@ -61,7 +61,9 @@ ebuild文件使用tab缩进，每个tab占位四个空格。参见[ebuild文件�
 
 `dodoc`是一个helper函数，将文件安装在`/usr/share/doc`的对应位置下。
 
-ebuild中还可以定义新的函数（参见[ebuild函数](ebuild-writing/functions.md)）在所有情况下，portage提供了一种合理的默认实现，在很多情况下使用默认实现即可。比如，这里不需要定义`src_unpack`和`src_compile`函数——`src_unpack`函数用于对源码包和源码补丁进行解压，示例中默认实现已经可以满足我们的需求。类似地，默认的`src_compile`函数将调用`emake`（一个`make`命令的封装）。
+ebuild中还可以定义新的函数（参见[ebuild函数](ebuild-writing/functions.md)）
+
+portage为每个函数提供了一种合理的默认实现，在很多情况下使用默认实现即可。比如，这里不需要定义`src_unpack`和`src_compile`函数——`src_unpack`函数用于对源码包和源码补丁进行解压，示例中默认实现已经可以满足我们的需求。类似地，默认的`src_compile`函数将调用`emake`（一个`make`命令的封装）。
 
 > 注意，在以前的版本中必须在每个命令后加上`|| die`进行错误检查。从EAPI 4开始不再需要，portage提供的函数报错会自动停止。
 
@@ -111,9 +113,9 @@ src_install() {
 
 ## 带补丁的ebuild
 
-我们经常需要对源码包应用补丁，在ebuild中通过在`src_prepare`函数中调用`epatch`helper函数来达成。
+我们经常需要对源码包应用补丁，在ebuild中通过在`src_prepare`函数中调用`epatch` helper函数来达成。
 
-在调用`epatch`之前，必须告诉portage要引用`eutils`eclass（eclass相当于一个类库）——通过在ebuild顶部添加`inherit eutils`语句来实现。
+在调用`epatch`之前，必须告诉portage要引用`eutils` eclass（eclass相当于一个类库）——通过在ebuild顶部添加`inherit eutils`语句来实现。
 
 下面是`app-misc/detox/detox-1.1.0.ebuild`的内容：
 
@@ -187,7 +189,7 @@ src_install() {
 ```
 注意到其中的`IUSE`变量，其中列举出ebuild所使用的所有非特殊USE标记。USE标记会在`emerge -pv`命令中输出。
 
-libiconv包的`./configure`脚本接收常用的`--enable-nls`或`--disable-nls`参数。我们使用`use_enable`工具函数来根据用户设置的USE标记自动生成该参数（参见[查询函数参考](chapters/function-reference/query-functions.md)）。
+libiconv包的`./configure`脚本接收常见的`--enable-nls`或`--disable-nls`参数。我们使用`use_enable`工具函数来根据用户设置的USE标记自动生成该参数（参见[查询函数参考](chapters/function-reference/query-functions.md)）。
 
 下面是一个更复杂的示例，基于`mail-client/sylpheed/sylpheed-1.0.4.ebuild`：
 
@@ -250,4 +252,4 @@ src_install() {
 
 注意这里包含可选依赖。
 
-有些`use_enable`调用带两个参数，这种方式适用于USE标记和实际参数名称不匹配的情况，其中第一个参数代表USE标记，第二个参数代表当USE标记激活时的替代字符串，比如上面的`use_enable crypt gpgme`，其含义为：当激活`crypt`USE标记时，对`.configure`添加`--enable-gpgme`参数。
+有些`use_enable`调用带两个参数，这种方式适用于USE标记和实际参数名称不匹配的情况，其中第一个参数代表USE标记，第二个参数代表当USE标记激活时的替代字符串，比如上面的`use_enable crypt gpgme`，其含义为：当激活`crypt`USE标记时，对`./configure`添加`--enable-gpgme`参数。
